@@ -54,7 +54,6 @@ public class Preprocessor {
 //                        System.out.println("Open file " + words[1] + "\n");
 
 //                        if (words[1].startsWith("\"")) {
-//                                System.out.print("Yes " + words[1]);
 //                            java.io.File fileOfInclude = new java.io.File(words[1]);
 //                            Scanner inputInclude = new Scanner(fileOfInclude);
 //                            while (inputInclude.hasNext()) {
