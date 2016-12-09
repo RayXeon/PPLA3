@@ -1,7 +1,7 @@
 /**
  * Created by rayyeon on 12/5/16.
  */
-//import java.io.File;
+
 import javax.swing.text.StyledEditorKit;
 import java.io.IOException;
 import java.util.Scanner;
