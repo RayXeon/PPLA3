@@ -89,25 +89,10 @@ public class Preprocessor {
             System.out.println("Wrong");
         }
 
-//        replacement();
+
 
     }
-    public static void replacement() throws IOException{
-        java.io.File file1 = new java.io.File("tempInclude.c");
-        Scanner input2 = new Scanner(file1);
 
-        java.io.File outputFile2 = new java.io.File("Final.c");
-        java.io.PrintStream output2 = new java.io.PrintStream(outputFile2);
-
-        while (input2.hasNext()){
-            String line2 = input2.nextLine();
-//            System.out.print("++:");
-//            System.out.println(line2);
-            output2.println(line2);
-
-        }
-
-    }
 
     public static boolean isNumber(String s){
         try {
