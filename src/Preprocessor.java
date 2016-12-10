@@ -5,6 +5,7 @@
 import javax.swing.text.StyledEditorKit;
 import java.io.*;
 import java.lang.reflect.Array;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Objects;
@@ -50,10 +51,12 @@ public class Preprocessor {
 //                        String s = words[1];
                         if(words[1].startsWith("\"")){
 
-//                            Path path = Paths.get(words[1]);
-//                            path.relativize();
-//                            FilenameUtils.separatorsToSystem(String path);
+//                            Path path = FileSystems.getDefault().getPath(words[1]);
+
+
+//                            appendFileToOriginal(words[1],pF);
                             appendFileToOriginal("./src/e_file.h",pF);
+
                             continue;
                         }
                         outPre.println(line);
@@ -134,6 +137,7 @@ public class Preprocessor {
 //                ex.printStackTrace();
             }
         }
+        System.out.print("Success!");
     }
 
     public static boolean isNumber(String s){
