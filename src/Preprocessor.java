@@ -18,10 +18,7 @@ public class Preprocessor {
         java.io.PrintStream output = new java.io.PrintStream(outputFile);
         java.io.PrintStream outPre = new java.io.PrintStream(outputPre);
 
-//        if(outputFile.exists()){
-//            System.out.println("File already exists");
-//            System.exit(1);
-//        }
+
 
         try{
             java.io.File file = new java.io.File(
