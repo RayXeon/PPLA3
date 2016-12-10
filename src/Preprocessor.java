@@ -36,28 +36,12 @@ public class Preprocessor {
                     if( words.length>0 && words[0].equals("#define")){
                         outPre.println(line);
                         continue;
-//                        System.out.print(isNumber(words[2]) + "\n");
-//                        if(words[2].startsWith("\"")){
-//                        if(words.length == 3){
-//                            System.out.println("Replace " + words[1] + " with " + words[2]);
-//                        }
                     }
 
                     /*Detect Include*/
                     if (words.length>0 && words[0].equals("#include")){
                         outPre.println(line);
                         continue;
-//                        System.out.println("Yes " + words[1]);
-//                        System.out.println("Open file " + words[1] + "\n");
-
-//                        if (words[1].startsWith("\"")) {
-//                            java.io.File fileOfInclude = new java.io.File(words[1]);
-//                            Scanner inputInclude = new Scanner(fileOfInclude);
-//                            while (inputInclude.hasNext()) {
-//                                String lineFromInclude = inputInclude.nextLine();
-//                                output.println(lineFromInclude);
-//                            }
-//                        }
                     }
 
                     /*Single line comment detection*/
