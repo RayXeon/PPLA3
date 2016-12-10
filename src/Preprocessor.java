@@ -11,23 +11,20 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 import java.io.FileReader;
-import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class Preprocessor {
-    private static final String  pF= "preprocessFile.c";
+    private static final String  tempFile= "temp.c";
     public static void main(String[] args) throws IOException
     {
 
 
-        File outputFile = new File("temp.c");
-        File outputPre = new File(pF);
-
+        File outputFile = new File(tempFile);
 
         PrintStream output = new PrintStream(outputFile);
-        PrintStream outPre = new PrintStream(outputPre);
-
-        StringBuilder sb = new StringBuilder();
-
+        Pattern pattern = Pattern.compile("[A-Z]");
         try{
             File file = new File(
                     "./src/a_test.c");
@@ -42,24 +39,36 @@ public class Preprocessor {
 
                     /*Detect Define*/
                     if( words.length>0 && words[0].equals("#define")){
-                        outPre.println(line);
+                        Matcher matcher = pattern.matcher(words[0]);
+                        if(matcher.find()){
+                            System.out.println(line);
+                            System.out.println("Gocha!");
+                        }
+                        output.println(line);
                         continue;
                     }
 
                     /*Detect Include*/
                     if (words.length>0 && words[0].equals("#include")){
-//                        String s = words[1];
                         if(words[1].startsWith("\"")){
 
-//                            Path path = FileSystems.getDefault().getPath(words[1]);
+                            String withoutQuotes_path = words[1].replace("\"", "");
+                            try {
+                                File fr = new File(withoutQuotes_path);
+                                Scanner in = new Scanner(fr);
+                                while(in.hasNext()){
+                                    String lineofnewFile = in.nextLine();
+                                    output.println(lineofnewFile);
+                                }
 
-
-//                            appendFileToOriginal(words[1],pF);
-                            appendFileToOriginal("./src/e_file.h",pF);
+                            }
+                            catch (IOException e){
+                                System.out.print("Something wront in get another file.");
+                            }
 
                             continue;
                         }
-                        outPre.println(line);
+                        output.println(line);
                         continue;
                     }
 
@@ -94,11 +103,11 @@ public class Preprocessor {
     public static void appendFileToOriginal(String input, String output) throws FileNotFoundException{
         BufferedWriter bw = null;
         FileWriter fw = null;
-
+        FileReader fr = null;
 
         try {
 
-            FileReader fr = new FileReader(input);
+            fr = new FileReader(input);
             Scanner in = new Scanner(fr);
             File outfile = new File(output);
 
@@ -129,12 +138,12 @@ public class Preprocessor {
                 if (fw != null)
                     fw.close();
 
-//                if (fr != null)
-//                    fr.close();
+                if (fr != null)
+                    fr.close();
 
             } catch (IOException ex) {
                 System.out.print("Here is where you are wrong!");
-//                ex.printStackTrace();
+                ex.printStackTrace();
             }
         }
         System.out.print("Success!");
