@@ -4,21 +4,28 @@
 
 import javax.swing.text.StyledEditorKit;
 import java.io.*;
+import java.lang.reflect.Array;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
+import java.io.FileReader;
+import java.nio.file.Paths;
 
 public class Preprocessor {
+    private static final String  pF= "preprocessFile.c";
     public static void main(String[] args) throws IOException
     {
 
 
         File outputFile = new File("temp.c");
-        File outputPre = new File("preprocessFile.c");
+        File outputPre = new File(pF);
 
 
         PrintStream output = new PrintStream(outputFile);
         PrintStream outPre = new PrintStream(outputPre);
 
-
+        StringBuilder sb = new StringBuilder();
 
         try{
             File file = new File(
@@ -40,6 +47,15 @@ public class Preprocessor {
 
                     /*Detect Include*/
                     if (words.length>0 && words[0].equals("#include")){
+//                        String s = words[1];
+                        if(words[1].startsWith("\"")){
+
+//                            Path path = Paths.get(words[1]);
+//                            path.relativize();
+//                            FilenameUtils.separatorsToSystem(String path);
+                            appendFileToOriginal("./src/e_file.h",pF);
+                            continue;
+                        }
                         outPre.println(line);
                         continue;
                     }
@@ -68,60 +84,34 @@ public class Preprocessor {
         catch (java.io.FileNotFoundException ex){
             System.out.println("Something is Wrong!");
         }
-        copyFile("input.txt", "output.txt");
 
     }
 
-    public static void copyFile(String input, String output) throws IOException{
-        FileReader in = null;
-        FileWriter out = null;
 
-        try {
-            in = new FileReader(input);
-            out = new FileWriter(output);
-
-            int c;
-            while ((c = in.read()) != -1) {
-                out.write(c);
-            }
-        }finally {
-            if (in != null) {
-                in.close();
-            }
-            if (out != null) {
-                out.close();
-            }
-        }
-    }
-
-
-    public static void appendFileToOriginal(String input, String output){
+    public static void appendFileToOriginal(String input, String output) throws FileNotFoundException{
         BufferedWriter bw = null;
         FileWriter fw = null;
 
 
-
         try {
 
-
-
-            File file = new File(output);
+            FileReader fr = new FileReader(input);
+            Scanner in = new Scanner(fr);
+            File outfile = new File(output);
 
             // if file doesnt exists, then create it
-            if (!file.exists()) {
-                file.createNewFile();
+            if (!outfile.exists()) {
+                outfile.createNewFile();
             }
 
-            // true = append file
-            fw = new FileWriter(file.getAbsoluteFile(), true);
+            fw = new FileWriter(outfile.getAbsoluteFile(), true);
             bw = new BufferedWriter(fw);
 
-            bw.newLine();
-//            bw.write(data);
-
-
-            System.out.println("Done");
-
+//            int c;
+            while(in.hasNext()){
+                String line = in.nextLine();
+                bw.write(line);
+            }
         } catch (IOException e) {
 
             e.printStackTrace();
@@ -136,10 +126,12 @@ public class Preprocessor {
                 if (fw != null)
                     fw.close();
 
+//                if (fr != null)
+//                    fr.close();
+
             } catch (IOException ex) {
-
-                ex.printStackTrace();
-
+                System.out.print("Here is where you are wrong!");
+//                ex.printStackTrace();
             }
         }
     }

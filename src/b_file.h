@@ -19,5 +19,5 @@
 
 #define CMT_OUT "Correct!\n"
 
-#include "/home/wmahoney/CSCI4220/fall_three/c_file.h"
-#include "/home/wmahoney/CSCI4220/fall_three/d_file.h"
+#include "./src/c_file.h"
+#include "./src/d_file.h"
