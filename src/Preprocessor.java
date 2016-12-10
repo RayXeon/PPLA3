@@ -3,7 +3,7 @@
  */
 
 import javax.swing.text.StyledEditorKit;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
 public class Preprocessor {
@@ -11,18 +11,18 @@ public class Preprocessor {
     {
 
 
-        java.io.File outputFile = new java.io.File("temp.c");
-        java.io.File outputPre = new java.io.File("preprocessFile.c");
+        File outputFile = new File("temp.c");
+        File outputPre = new File("preprocessFile.c");
 
 
-        java.io.PrintStream output = new java.io.PrintStream(outputFile);
-        java.io.PrintStream outPre = new java.io.PrintStream(outputPre);
+        PrintStream output = new PrintStream(outputFile);
+        PrintStream outPre = new PrintStream(outputPre);
 
 
 
         try{
-            java.io.File file = new java.io.File(
-                    "/Users/rayyeon/Documents/IdeaProjects/PPLAssignment3/src/a_test.c");
+            File file = new File(
+                    "./src/a_test.c");
             Scanner input = new Scanner(file);
 
             boolean seperateLineCommentFlag = false;
@@ -66,13 +66,83 @@ public class Preprocessor {
             }
         }
         catch (java.io.FileNotFoundException ex){
-            System.out.println("Wrong");
+            System.out.println("Something is Wrong!");
         }
-
-
+        copyFile("input.txt", "output.txt");
 
     }
 
+    public static void copyFile(String input, String output) throws IOException{
+        FileReader in = null;
+        FileWriter out = null;
+
+        try {
+            in = new FileReader(input);
+            out = new FileWriter(output);
+
+            int c;
+            while ((c = in.read()) != -1) {
+                out.write(c);
+            }
+        }finally {
+            if (in != null) {
+                in.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
+
+
+    public static void appendFileToOriginal(String input, String output){
+        BufferedWriter bw = null;
+        FileWriter fw = null;
+
+
+
+        try {
+
+
+
+            File file = new File(output);
+
+            // if file doesnt exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            // true = append file
+            fw = new FileWriter(file.getAbsoluteFile(), true);
+            bw = new BufferedWriter(fw);
+
+            bw.newLine();
+//            bw.write(data);
+
+
+            System.out.println("Done");
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            try {
+
+                if (bw != null)
+                    bw.close();
+
+                if (fw != null)
+                    fw.close();
+
+            } catch (IOException ex) {
+
+                ex.printStackTrace();
+
+            }
+        }
+    }
 
     public static boolean isNumber(String s){
         try {
@@ -131,11 +201,8 @@ public class Preprocessor {
         }
 
         String newString = trimedString.toString();
-
         return newString;
     }
-
-
 
     public static boolean commentTest3(String[] s){
         boolean commenttest = false;
