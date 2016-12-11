@@ -8,6 +8,7 @@ import java.lang.reflect.Array;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.Objects;
 import java.util.Scanner;
 import java.io.FileReader;
@@ -24,7 +25,8 @@ public class Preprocessor {
         File outputFile = new File(tempFile);
 
         PrintStream output = new PrintStream(outputFile);
-        Pattern pattern = Pattern.compile("[A-Z]");
+        Pattern pattern = Pattern.compile("[A-Z]+");
+        Hashtable myTable = new Hashtable();
         try{
             File file = new File(
                     "./src/a_test.c");
@@ -39,13 +41,17 @@ public class Preprocessor {
 
                     /*Detect Define*/
                     if( words.length>0 && words[0].equals("#define")){
-                        Matcher matcher = pattern.matcher(words[0]);
+                        Matcher matcher = pattern.matcher(words[1]);
                         if(matcher.find()){
                             System.out.println(line);
                             System.out.println("Gocha!");
+                            myTable.put(words[1], words[2]);
+                            output.println(words[1] + " = " + words[2]);
+                            continue;
                         }
                         output.println(line);
                         continue;
+
                     }
 
                     /*Detect Include*/
@@ -60,12 +66,10 @@ public class Preprocessor {
                                     String lineofnewFile = in.nextLine();
                                     output.println(lineofnewFile);
                                 }
-
                             }
                             catch (IOException e){
                                 System.out.print("Something wront in get another file.");
                             }
-
                             continue;
                         }
                         output.println(line);
@@ -92,86 +96,37 @@ public class Preprocessor {
                 }
                 output.println(line);
             }
+
+            File file1 = new File(tempFile);
+            File file2 = new File("almost.c");
+            PrintStream output2 = new PrintStream(file2);
+
+            Scanner in2 = new Scanner (file1);
+            while(in2.hasNext()){
+                String line2 = in2.nextLine();
+                if(line2.length() != 0){
+                    String[] words2 = line2.split(" ");
+                    if (words2.length>0 && words2[0].equals("#include")){
+                        Matcher matcher = pattern.matcher(words2[1]);
+                        if(matcher.find()) {
+                            output2.println(words2[0] + " " + myTable.get(words2[1]));
+                            continue;
+                        }
+                    }
+                    output2.println(line2);
+                    continue;
+                }
+                output2.println(line2);
+
+            }
         }
         catch (java.io.FileNotFoundException ex){
             System.out.println("Something is Wrong!");
         }
 
+        System.out.print("This is what you want:" + myTable.get("A_FILE"));
     }
 
-
-    public static void appendFileToOriginal(String input, String output) throws FileNotFoundException{
-        BufferedWriter bw = null;
-        FileWriter fw = null;
-        FileReader fr = null;
-
-        try {
-
-            fr = new FileReader(input);
-            Scanner in = new Scanner(fr);
-            File outfile = new File(output);
-
-            // if file doesnt exists, then create it
-            if (!outfile.exists()) {
-                outfile.createNewFile();
-            }
-
-            fw = new FileWriter(outfile.getAbsoluteFile(), true);
-            bw = new BufferedWriter(fw);
-
-//            int c;
-            while(in.hasNext()){
-                String line = in.nextLine();
-                bw.write(line);
-            }
-        } catch (IOException e) {
-
-            e.printStackTrace();
-
-        } finally {
-
-            try {
-
-                if (bw != null)
-                    bw.close();
-
-                if (fw != null)
-                    fw.close();
-
-                if (fr != null)
-                    fr.close();
-
-            } catch (IOException ex) {
-                System.out.print("Here is where you are wrong!");
-                ex.printStackTrace();
-            }
-        }
-        System.out.print("Success!");
-    }
-
-    public static boolean isNumber(String s){
-        try {
-            Integer.parseInt(s);
-        } catch(NumberFormatException e) {
-            try{
-                Double.parseDouble(s);
-            }
-            catch (NumberFormatException e1){
-                try{
-                    Float.parseFloat(s);
-                }
-                catch (NumberFormatException e2){
-                    return false;
-                }
-                return true;
-            }
-            return true;
-        } catch(NullPointerException e) {
-            return false;
-        }
-        // only got here if we didn't return false
-        return true;
-    }
 
 
     public static int commentTest1(String[] s){
