@@ -1,6 +1,6 @@
 #define STRING_OK "InCorrect!\n"
 
-#define ISA  REAL
+#define ISA REAL
 
 #define CHAR_1 'C'
 #define CHAR_2 'o'

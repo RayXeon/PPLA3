@@ -23,16 +23,14 @@ public class Preprocessor {
     {
 
         removeComment("./src/a_test.c",tempFile);
-        removeDefine(tempFile, almostFile);
-//        System.out.println(myTable.get("A_FILE"));
-        removeInclude(almostFile, closeFile);
-        removeInclude(closeFile,finalFile);
-        removeDefine(finalFile, tempFile);
-        removeInclude(tempFile, closeFile);
-        removeDefine(closeFile, almostFile);
-        removeComment(almostFile,tempFile);
-        removeInclude(tempFile, finalFile);
-        removeDefine(finalFile,tempFile);
+
+        for(int i= 0; i< 20; i++) {
+            removeDefine(tempFile, almostFile);
+            removeInclude(almostFile, closeFile);
+            removeComment(closeFile, tempFile);
+        }
+
+
         String str;
         Enumeration names = myTable.keys();
         while(names.hasMoreElements()) {
@@ -82,7 +80,7 @@ public class Preprocessor {
         catch (java.io.FileNotFoundException ex){
             System.out.println("Something is Wrong!");
         }
-        System.out.println("The comments are removed!");
+//        System.out.println("The comments are removed!");
     }
 
     public static void removeDefine(String inFile, String outFile) throws FileNotFoundException{
@@ -123,7 +121,7 @@ public class Preprocessor {
             System.out.println("Something is Wrong in removing define!");
         }
 
-        System.out.println("The defines are removed!");
+//        System.out.println("The defines are removed!");
     }
 
     public static void removeInclude(String inFile, String outFile) throws FileNotFoundException{
@@ -177,9 +175,7 @@ public class Preprocessor {
         catch (java.io.FileNotFoundException ex){
             System.out.println("Something is Wrong in removing include!");
         }
-
-        System.out.println("The includes are removed!");
-
+//        System.out.println("The includes are removed!");
     }
 
 
