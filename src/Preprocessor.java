@@ -17,7 +17,7 @@ public class Preprocessor {
     private static final String tempFile= "temp.c";
     private static final String almostFile = "almost.c";
     private static final String closeFile = "close.c";
-    private static final String finalFile = "final.c";
+//    private static final String finalFile = "final.c";
     private static Hashtable myTable = new Hashtable();
     public static void main(String[] args) throws IOException
     {
@@ -55,7 +55,7 @@ public class Preprocessor {
             {
                 String line = input.nextLine();
                 if(line.length() != 0) {
-                    String[] words = line.split(" ");
+                    String[] words = line.split("\\s+");
                     /*Single line comment detection*/
                     if(commentTest3(words))
                         continue;
@@ -98,7 +98,7 @@ public class Preprocessor {
             {
                 String line = input.nextLine();
                 if(line.length() != 0) {
-                    String[] words = line.split(" ");
+                    String[] words = line.split("\\s+");
 
                     /*Detect Define*/
                     if( words.length>0 && words[0].equals("#define")){
@@ -139,7 +139,7 @@ public class Preprocessor {
             {
                 String line = input.nextLine();
                 if(line.length() != 0) {
-                    String[] words = line.split(" ");
+                    String[] words = line.split("\\s+");
 
                     /*Detect Include*/
                     if (words.length>0 && words[0].equals("#include")){
@@ -177,7 +177,6 @@ public class Preprocessor {
         }
 //        System.out.println("The includes are removed!");
     }
-
 
     public static int commentTest1(String[] s){
 
