@@ -18,7 +18,7 @@ public class Test {
     public static void main(String[] args) throws IOException
     {
 
-        removeComment("./src/a_test.c",tempFile);
+        removeComment(args[0],tempFile);
 
         for(int i= 0; i< 20; i++) {
             removeDefine(tempFile, almostFile);
@@ -148,8 +148,19 @@ public class Test {
 
                             Matcher matcher = pattern.matcher(words[1]);
                             if (matcher.find()) {
-                                myTable.put(new String(words[1]), new String(words[2]));
-                                continue;
+                                if(words.length<4) {
+                                    myTable.put(new String(words[1]), new String(words[2]));
+                                    continue;
+                                }
+                                else{
+                                    StringBuilder builder = new StringBuilder();
+                                    for(int i= 2; i< words.length; i++) {
+                                        builder.append(words[i]);
+                                        builder.append(" ");
+                                    }
+                                    myTable.put(new String(words[1]), new String(builder));
+                                    continue;
+                                }
                             }
                         output.println(line);
                         continue;
@@ -249,6 +260,7 @@ public class Test {
         for(int i = 0; i < index; i++)
         {
             trimedString.append(s[i]);
+            trimedString.append(" ");
         }
 
         String newString = trimedString.toString();
