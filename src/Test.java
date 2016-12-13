@@ -2,23 +2,19 @@
  * Created by rayyeon on 12/5/16.
  */
 
-import javax.swing.text.StyledEditorKit;
 import java.io.*;
-import java.lang.reflect.Array;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.*;
-import java.io.FileReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Preprocessor {
+public class Test {
     private static final String tempFile= "temp.c";
     private static final String almostFile = "almost.c";
     private static final String closeFile = "close.c";
-//    private static final String finalFile = "final.c";
-    private static Hashtable myTable = new Hashtable();
+    private static final String finalFile = "final.c";
+    private static Hashtable<String, String> myTable = new Hashtable<String, String>();
+
     public static void main(String[] args) throws IOException
     {
 
@@ -30,15 +26,62 @@ public class Preprocessor {
             removeComment(closeFile, tempFile);
         }
 
-
-        String str;
-        Enumeration names = myTable.keys();
-        while(names.hasMoreElements()) {
-            str = (String) names.nextElement();
-            System.out.println(str + ": " + myTable.get(str));
+        String str1;
+        Enumeration<String> namesq = myTable.keys();
+        int idex = 1;
+        while(namesq.hasMoreElements()) {
+            str1 =  namesq.nextElement();
+            System.out.println(idex +": " + str1 + ": " + myTable.get(str1));
+            idex++;
         }
+        for(int i = 0; i< 30; i++){
+            Replacement(tempFile,finalFile);
+            Replacement(finalFile,tempFile);
+        }
+    }
+
+    public static void Replacement(String inFile, String outFile) throws  FileNotFoundException{
+        Pattern pattern1 = Pattern.compile("([A-Z]+(_[0-9]+)*(_[A-Z]+)*)+");
+        Pattern pattern2 = Pattern.compile("(\"[A-Z]+[^\"]*\")");
+        Pattern pattern3 = Pattern.compile("(\'[A-Z]+[^\']*\')");
 
 
+        File newfile = new File(inFile);
+        File finalfile = new File(outFile);
+
+        PrintStream output = new PrintStream(finalfile);
+        Scanner lastIn = new Scanner(newfile);
+        int index = 0;
+        while(lastIn.hasNext()){
+            String finalLine = lastIn.nextLine();
+            Matcher matcher1 = pattern1.matcher(finalLine);
+            Matcher matcher2 = pattern2.matcher(finalLine);
+            Matcher matcher3 = pattern3.matcher(finalLine);
+
+            String newlineOFfinal ;
+            if(finalLine.length()!=0){
+                System.out.println("Ori :: " + finalLine);
+                if( (matcher1.find() && !matcher2.find()&& !matcher3.find())){
+
+                    String str1 = matcher1.group();
+
+                    if(myTable.containsKey(str1)) {
+
+                        String myValue = myTable.get(str1);
+                        System.out.println("This is value " + myTable.get(str1));
+                        newlineOFfinal = matcher1.replaceFirst(myValue);
+                        output.println(newlineOFfinal);
+                        continue;
+                    }
+                    System.out.println("Result :: " + str1);
+                }
+                else{
+                    System.out.println("RE :: ");
+                }
+                output.println(finalLine);
+            }
+
+        }
     }
 
     public static void removeComment(String inFile, String outFile) throws FileNotFoundException{
@@ -105,10 +148,9 @@ public class Preprocessor {
 
                             Matcher matcher = pattern.matcher(words[1]);
                             if (matcher.find()) {
-                                myTable.put(words[1], words[2]);
+                                myTable.put(new String(words[1]), new String(words[2]));
                                 continue;
                             }
-
                         output.println(line);
                         continue;
                     }
@@ -121,12 +163,10 @@ public class Preprocessor {
             System.out.println("Something is Wrong in removing define!");
         }
 
-//        System.out.println("The defines are removed!");
     }
 
     public static void removeInclude(String inFile, String outFile) throws FileNotFoundException{
         File outputFile = new File(outFile);
-//
         PrintStream output = new PrintStream(outputFile);
         Pattern pattern = Pattern.compile("[A-Z]+");
 
@@ -151,6 +191,10 @@ public class Preprocessor {
                                 Scanner in = new Scanner(fr);
                                 while(in.hasNext()){
                                     String lineofnewFile = in.nextLine();
+//                                    String[] lineNew = lineofnewFile.split(";");
+//                                    for(int i = 0; i < lineNew.length; i++) {
+//                                        output.println(lineNew[i]);
+//                                    }
                                     output.println(lineofnewFile);
                                 }
                             }
@@ -170,12 +214,10 @@ public class Preprocessor {
                 }
                 output.println(line);
             }
-
         }
         catch (java.io.FileNotFoundException ex){
             System.out.println("Something is Wrong in removing include!");
         }
-//        System.out.println("The includes are removed!");
     }
 
     public static int commentTest1(String[] s){
