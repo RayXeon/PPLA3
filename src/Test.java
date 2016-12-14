@@ -35,13 +35,12 @@ public class Test {
             idex++;
         }
 
-
-        for(int i = 0; i< 4; i++){
-            Replacement(tempFile,finalFile);
-            Replacement(finalFile,tempFile);
-        }
         Pattern pattern1 = Pattern.compile("\\s+");
         Pattern pattern2 = Pattern.compile("(\\s\\+)");
+        String newLine1 = new String();
+        String newLine2 = new String();
+        String newLine3 = new String();
+        String newLine4 = new String();
 
 
         File in = new File(tempFile);
@@ -49,77 +48,67 @@ public class Test {
         PrintStream output = new PrintStream(out);
         Scanner input = new Scanner(in);
         while(input.hasNext()){
-            String outline = input.nextLine();
-            Matcher matcher1 = pattern1.matcher(outline);
 
-            if(matcher1.find()){
-                String newString = matcher1.replaceAll(" ");
-                Matcher matcher2 = pattern2.matcher(newString);
-                newString = matcher2.replaceAll("+");
-
-                System.out.println("OUTPUT: " + newString);
-                output.println(newString);
-                continue;
-            }
-        }
-    }
-
-
-    public static void Replacement(String inFile, String outFile) throws  FileNotFoundException{
-        Pattern pattern1 = Pattern.compile("([A-Z]+(_[0-9]+)*(_[A-Z]+)*)+");
-        Pattern pattern2 = Pattern.compile("(\"[A-Z]+[^\"]*\")");
-        Pattern pattern3 = Pattern.compile("(\'[A-Z]+[^\']*\')");
-        String newLine1 = new String();
-        String newLine2 = new String();
-        String newLine3 = new String();
-        String newLine4 = new String();
-        String newLine5 = new String();
-
-
-        File newfile = new File(inFile);
-        File finalfile = new File(outFile);
-
-        PrintStream output = new PrintStream(finalfile);
-        Scanner input = new Scanner(newfile);
-
-        while(input.hasNext()){
             String newLine0 = input.nextLine();
-
-
-
             if(newLine0.length()!=0){
 
                 newLine1 = newLine0.replaceAll("\\(","\\( ");
                 newLine2 = newLine1.replaceAll("\\)"," \\)");
                 newLine3 = newLine2.replaceAll(";"," ;");
                 newLine4 = newLine3.replaceAll(",", " , ");
-                newLine5 = newLine4.replaceAll("\\+"," \\+");
-//                newLine6 = newLine5.replaceAll("\\+ \\+", "++");
-//                Matcher matcher1 = pattern1.matcher(newLine4);
-//                Matcher matcher2 = pattern2.matcher(newLine4);
-//                Matcher matcher3 = pattern3.matcher(newLine4);
+                System.out.println("Before split: " + newLine4);
+                String[] words = newLine4.split(" ");
 
-//                System.out.println("Ori :: " + newLine4);
-
-                String[] words = newLine5.split(" ");
-                String tempString = newLine5;
-                for(String s : words){
-                    if(myTable.containsKey(s)){
-//                        System.out.println("Catched word: " + s);
-                        tempString = tempString.replaceAll(s, myTable.get(s));
-//                        output.println("Come from 2");
-//                        output.println(tempString);
-//                        System.out.println("Result :: " + tempString);
-                        break;
-                    }
+                StringBuilder builder = new StringBuilder();
+                for(int i= 0; i< words.length; i++) {
+                    builder.append(ReplacementOfString(words[i]));
+                    builder.append(" ");
                 }
-//                output.println("Come from 1");
-                output.println(tempString);
 
+                System.out.println("The new String  :: " + builder +"\n");
+
+                output.println(builder);
                 continue;
             }
-
         }
+//        for(int i = 0; i< 4; i++){
+//            Replacement(tempFile,finalFile);
+//            Replacement(finalFile,tempFile);
+//        }
+    }
+
+
+    public static String ReplacementOfString(String inFile) throws  FileNotFoundException{
+        Pattern pattern1 = Pattern.compile("([A-Z]+(_[A-Z0-9]+)*)+");
+//        Pattern pattern2 = Pattern.compile("(\"[A-Z]+[^\"]*\")");
+//        Pattern pattern3 = Pattern.compile("(\'[A-Z]+[^\']*\')");
+//        Pattern pattern2 = Pattern.compile("(\"[A-Z]+\")");
+//        Pattern pattern3 = Pattern.compile("(\'[A-Z]+\')");
+
+//        File newfile = new File(inFile);
+//        File finalfile = new File(outFile);
+
+//        PrintStream output = new PrintStream(finalfile);
+//        Scanner input = new Scanner(newfile);
+
+//        while(input.hasNext()){
+//            String newLine = input.nextLine();
+            Matcher matcher1 = pattern1.matcher(inFile);
+//            Matcher matcher2 = pattern2.matcher(inFile);
+//            Matcher matcher3 = pattern3.matcher(inFile);
+//            if(newLine.length()!=0){
+//                System.out.println("Original :: " + inFile); && !matcher2.find() && !matcher3.find()
+                if(matcher1.find()){
+                    String string = matcher1.group();
+                    System.out.println("Catched the words :: " + string );
+                    if(myTable.containsKey(string)) {
+                        System.out.println("Changing to : " + matcher1.replaceFirst(myTable.get(string)));
+                        return matcher1.replaceAll(myTable.get(string));
+                    }
+                }
+                return inFile;
+
+
     }
 
     public static void removeComment(String inFile, String outFile) throws FileNotFoundException{
