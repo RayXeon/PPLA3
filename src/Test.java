@@ -18,7 +18,7 @@ public class Test {
     public static void main(String[] args) throws IOException
     {
 
-        removeComment(args[0],tempFile);
+        removeComment("./src/a_test.c",tempFile);
 
         for(int i= 0; i< 20; i++) {
             removeDefine(tempFile, almostFile);
@@ -34,51 +34,89 @@ public class Test {
             System.out.println(idex +": " + str1 + ": " + myTable.get(str1));
             idex++;
         }
-        for(int i = 0; i< 30; i++){
+
+
+        for(int i = 0; i< 4; i++){
             Replacement(tempFile,finalFile);
             Replacement(finalFile,tempFile);
         }
+        Pattern pattern1 = Pattern.compile("\\s+");
+        Pattern pattern2 = Pattern.compile("(\\s\\+)");
+
+
+        File in = new File(tempFile);
+        File out = new File(finalFile);
+        PrintStream output = new PrintStream(out);
+        Scanner input = new Scanner(in);
+        while(input.hasNext()){
+            String outline = input.nextLine();
+            Matcher matcher1 = pattern1.matcher(outline);
+
+            if(matcher1.find()){
+                String newString = matcher1.replaceAll(" ");
+                Matcher matcher2 = pattern2.matcher(newString);
+                newString = matcher2.replaceAll("+");
+
+                System.out.println("OUTPUT: " + newString);
+                output.println(newString);
+                continue;
+            }
+        }
     }
+
 
     public static void Replacement(String inFile, String outFile) throws  FileNotFoundException{
         Pattern pattern1 = Pattern.compile("([A-Z]+(_[0-9]+)*(_[A-Z]+)*)+");
         Pattern pattern2 = Pattern.compile("(\"[A-Z]+[^\"]*\")");
         Pattern pattern3 = Pattern.compile("(\'[A-Z]+[^\']*\')");
+        String newLine1 = new String();
+        String newLine2 = new String();
+        String newLine3 = new String();
+        String newLine4 = new String();
+        String newLine5 = new String();
 
 
         File newfile = new File(inFile);
         File finalfile = new File(outFile);
 
         PrintStream output = new PrintStream(finalfile);
-        Scanner lastIn = new Scanner(newfile);
-        int index = 0;
-        while(lastIn.hasNext()){
-            String finalLine = lastIn.nextLine();
-            Matcher matcher1 = pattern1.matcher(finalLine);
-            Matcher matcher2 = pattern2.matcher(finalLine);
-            Matcher matcher3 = pattern3.matcher(finalLine);
+        Scanner input = new Scanner(newfile);
 
-            String newlineOFfinal ;
-            if(finalLine.length()!=0){
-                System.out.println("Ori :: " + finalLine);
-                if( (matcher1.find() && !matcher2.find()&& !matcher3.find())){
+        while(input.hasNext()){
+            String newLine0 = input.nextLine();
 
-                    String str1 = matcher1.group();
 
-                    if(myTable.containsKey(str1)) {
 
-                        String myValue = myTable.get(str1);
-                        System.out.println("This is value " + myTable.get(str1));
-                        newlineOFfinal = matcher1.replaceFirst(myValue);
-                        output.println(newlineOFfinal);
-                        continue;
+            if(newLine0.length()!=0){
+
+                newLine1 = newLine0.replaceAll("\\(","\\( ");
+                newLine2 = newLine1.replaceAll("\\)"," \\)");
+                newLine3 = newLine2.replaceAll(";"," ;");
+                newLine4 = newLine3.replaceAll(",", " , ");
+                newLine5 = newLine4.replaceAll("\\+"," \\+");
+//                newLine6 = newLine5.replaceAll("\\+ \\+", "++");
+//                Matcher matcher1 = pattern1.matcher(newLine4);
+//                Matcher matcher2 = pattern2.matcher(newLine4);
+//                Matcher matcher3 = pattern3.matcher(newLine4);
+
+//                System.out.println("Ori :: " + newLine4);
+
+                String[] words = newLine5.split(" ");
+                String tempString = newLine5;
+                for(String s : words){
+                    if(myTable.containsKey(s)){
+//                        System.out.println("Catched word: " + s);
+                        tempString = tempString.replaceAll(s, myTable.get(s));
+//                        output.println("Come from 2");
+//                        output.println(tempString);
+//                        System.out.println("Result :: " + tempString);
+                        break;
                     }
-                    System.out.println("Result :: " + str1);
                 }
-                else{
-                    System.out.println("RE :: ");
-                }
-                output.println(finalLine);
+//                output.println("Come from 1");
+                output.println(tempString);
+
+                continue;
             }
 
         }
