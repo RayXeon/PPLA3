@@ -18,7 +18,7 @@ public class Test {
     public static void main(String[] args) throws IOException
     {
 
-        removeComment("./src/a_test.c",tempFile);
+        removeComment(args[0],tempFile);
 
         for(int i= 0; i< 20; i++) {
             removeDefine(tempFile, almostFile);
@@ -35,18 +35,24 @@ public class Test {
             idex++;
         }
 
-        Pattern pattern1 = Pattern.compile("\\s+");
-        Pattern pattern2 = Pattern.compile("(\\s\\+)");
+
+
+        for(int i = 0; i< 4; i++){
+            fireParser(tempFile,finalFile);
+            fireParser(finalFile,tempFile);
+        }
+    }
+    public static void fireParser(String in, String out) throws IOException{
+        File inputFile = new File(in);
+        File outputFile = new File(out);
+
+        PrintStream output = new PrintStream(outputFile);
         String newLine1 = new String();
         String newLine2 = new String();
         String newLine3 = new String();
         String newLine4 = new String();
 
-
-        File in = new File(tempFile);
-        File out = new File(finalFile);
-        PrintStream output = new PrintStream(out);
-        Scanner input = new Scanner(in);
+        Scanner input = new Scanner(inputFile);
         while(input.hasNext()){
 
             String newLine0 = input.nextLine();
@@ -64,62 +70,40 @@ public class Test {
                     builder.append(ReplacementOfString(words[i]));
                     builder.append(" ");
                 }
-
                 System.out.println("The new String  :: " + builder +"\n");
-
                 output.println(builder);
                 continue;
             }
         }
-//        for(int i = 0; i< 4; i++){
-//            Replacement(tempFile,finalFile);
-//            Replacement(finalFile,tempFile);
-//        }
     }
 
-
     public static String ReplacementOfString(String inFile) throws  FileNotFoundException{
-        Pattern pattern1 = Pattern.compile("([A-Z]+(_[A-Z0-9]+)*)+");
-//        Pattern pattern2 = Pattern.compile("(\"[A-Z]+[^\"]*\")");
-//        Pattern pattern3 = Pattern.compile("(\'[A-Z]+[^\']*\')");
-//        Pattern pattern2 = Pattern.compile("(\"[A-Z]+\")");
-//        Pattern pattern3 = Pattern.compile("(\'[A-Z]+\')");
+        Pattern pattern1 = Pattern.compile("(([A-Za-z]+)(_[a-zA-Z0-9]+)*)+");
+        Pattern pattern = Pattern.compile("(\"[^\"]*\")|(\"[^\"]*)");
 
-//        File newfile = new File(inFile);
-//        File finalfile = new File(outFile);
-
-//        PrintStream output = new PrintStream(finalfile);
-//        Scanner input = new Scanner(newfile);
-
-//        while(input.hasNext()){
-//            String newLine = input.nextLine();
-            Matcher matcher1 = pattern1.matcher(inFile);
-//            Matcher matcher2 = pattern2.matcher(inFile);
-//            Matcher matcher3 = pattern3.matcher(inFile);
-//            if(newLine.length()!=0){
-//                System.out.println("Original :: " + inFile); && !matcher2.find() && !matcher3.find()
-                if(matcher1.find()){
-                    String string = matcher1.group();
-                    System.out.println("Catched the words :: " + string );
-                    if(myTable.containsKey(string)) {
-                        System.out.println("Changing to : " + matcher1.replaceFirst(myTable.get(string)));
-                        return matcher1.replaceAll(myTable.get(string));
-                    }
-                }
-                return inFile;
-
-
+        Matcher matcher1 = pattern1.matcher(inFile);
+        Matcher matcher = pattern.matcher(inFile);
+        if(matcher1.find() && !matcher.find()){
+            String string = matcher1.group(1);
+            System.out.println("Catched the words :: " + string );
+            if(myTable.containsKey(string)) {
+                System.out.println("The value of  table is: " + myTable.get(string));
+//                System.out.println("Changing to : " + matcher1.replaceFirst(myTable.get(string)));
+                System.out.println("Change to:" + inFile.replace(string, myTable.get(string)));
+//                return matcher1.replaceAll(myTable.get(string));
+                return inFile.replace(string, myTable.get(string));
+            }
+        }
+        return inFile;
     }
 
     public static void removeComment(String inFile, String outFile) throws FileNotFoundException{
         File outputFile = new File(outFile);
-
         PrintStream output = new PrintStream(outputFile);
         try{
             File file = new File(
                     inFile);
             Scanner input = new Scanner(file);
-
             boolean seperateLineCommentFlag = false;
             while(input.hasNext())
             {
@@ -127,8 +111,14 @@ public class Test {
                 if(line.length() != 0) {
                     String[] words = line.split("\\s+");
                     /*Single line comment detection*/
-                    if(commentTest3(words))
-                        continue;
+                    if(commentTest3(words)){
+                        if(words[0].equals("//"))
+                            continue;
+                        else{
+                            output.println(wordsWithoutCommentEntail(words));
+                            continue;}
+                    }
+
                     if(commentTest1(words) == 3) {
                         output.println(wordsWithoutCommentEntail(words));
                         continue;
@@ -150,14 +140,13 @@ public class Test {
         catch (java.io.FileNotFoundException ex){
             System.out.println("Something is Wrong!");
         }
-//        System.out.println("The comments are removed!");
     }
 
     public static void removeDefine(String inFile, String outFile) throws FileNotFoundException{
         File outputFile = new File(outFile);
 
         PrintStream output = new PrintStream(outputFile);
-        Pattern pattern = Pattern.compile("[A-Z]+");
+//        Pattern pattern = Pattern.compile("[A-Z]+");
 
         try{
             File file = new File(
@@ -173,13 +162,13 @@ public class Test {
                     /*Detect Define*/
                     if( words.length>0 && words[0].equals("#define")){
 
-                            Matcher matcher = pattern.matcher(words[1]);
-                            if (matcher.find()) {
-                                if(words.length<4) {
+//                            Matcher matcher = pattern.matcher(words[1]);
+//                            if (matcher.find()) {
+                                if(words.length<=4) {
                                     myTable.put(new String(words[1]), new String(words[2]));
                                     continue;
                                 }
-                                else{
+                                if(words.length>4){
                                     StringBuilder builder = new StringBuilder();
                                     for(int i= 2; i< words.length; i++) {
                                         builder.append(words[i]);
@@ -188,9 +177,9 @@ public class Test {
                                     myTable.put(new String(words[1]), new String(builder));
                                     continue;
                                 }
-                            }
-                        output.println(line);
-                        continue;
+//                            }
+//                        output.println(line);
+//                        continue;
                     }
 
                 }
@@ -229,15 +218,11 @@ public class Test {
                                 Scanner in = new Scanner(fr);
                                 while(in.hasNext()){
                                     String lineofnewFile = in.nextLine();
-//                                    String[] lineNew = lineofnewFile.split(";");
-//                                    for(int i = 0; i < lineNew.length; i++) {
-//                                        output.println(lineNew[i]);
-//                                    }
                                     output.println(lineofnewFile);
                                 }
                             }
                             catch (IOException e){
-                                System.out.print("Something wront in get another file.");
+                                System.out.println("Something wront in get another file.");
                             }
                             continue;
                         }
@@ -276,16 +261,26 @@ public class Test {
     }
 
     public static String wordsWithoutCommentEntail(String[] s){
-        int index = 0;
+        int index1 = -1;
+        int index2 = -1;
+        int index3 = -1;
         for(int i = 0; i < s.length; i++)
         {
             if(s[i].equals("/*"))
-                index = i;
+                index1 = i;
+            if(s[i].equals("*/"))
+                index2 = i;
+            if(s[i].equals("//"))
+                index3 = i;
+
         }
         StringBuilder trimedString = new StringBuilder();
 
-        for(int i = 0; i < index; i++)
+        for(int i = 0; i < s.length; i++)
         {
+            if((i >= index1 && i <= index2)||(index3 >0 && i >= index3)){
+                continue;
+            }
             trimedString.append(s[i]);
             trimedString.append(" ");
         }
